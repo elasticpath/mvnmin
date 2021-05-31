@@ -1,65 +1,33 @@
 # Overview
 
-Mvnminimal speeds up large multi-module maven builds by only building what's changed. 
+`mvnmin` speeds up builds on large multi-module maven builds, building only the changed modules. 
 
-# Setup
+Pros
+ * detect and build only changed modules, speeding up builds 
+ * basic dependent module building, build the things you need to get your job done and your app restarted
+ * finer-grained control over maven-invoker-based sub-projects 
+ 
+# Installation
 
-You can either install from a `homebrew` tap, a zip binary, or from source.
+## Binary Installation
 
-## Install via `homebrew`
+1. Check this page for currently available releases: https://github.elasticpath.com/mvnmin/releases
+1. Download the required zip file and place it into a folder, e.g. `~/tools/mvnmin`
+1. Unzip the downloaded file
+    ```
+    unzip maven-minimal-0.0.7.zip
+    ```
+1. On a *nix running bash (including Mac) create an alias in your terminal.  This can also be made permanent use, by adding it to your `~/.bash_profile`
 
-We have a private `homebrew` tap that allows internal EP developers to install and upgrade mvnmin simply.
-This also allows us to practise the release process for a public launch.
+    ```
+    alias mvnmin='java -jar ~/tools/mvnmin/mvnmin-0.0.7-jar-with-dependencies.jar'
+    ```
+1. Execute `mvnmin --version` and you should see this output: 
+    ```
+   mvnmin 0.0.7-SNAPSHOT
+    ```
 
-1. Create a Personal Access Token  
-   Our internal Github requires `homebrew` to provide a Personal Access Token so it can download the `mvnmin` formula.  
-   Thankfully this is temporary, until we make `mvnmin` public.  
-   1. This guide shows how to create a token: https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token
-   1. Grant the `public_repo` permission to the token. 
-   1. Record the value of this token in a `~/.netrc` file
-      ```
-      machine github.elasticpath.net
-      login <usename>
-      password <token>  
-      ```
-
-2. Tap the formula  
-The config from the previous step will allow you now to tap the formula
-   ```
-   brew tap ijensen/homebrew-mvnmin https://github.elasticpath.net/ijensen/homebrew-mvnmin
-   ```
-
-3. Install  
-   Including the value of the token from the previous step allows us to actually install `mvnmin`.
-   ```
-   HOMEBREW_GITHUB_API_TOKEN=<token> brew install mvnmin
-   ``` 
-
-   If all goes well you should then be able to run `mvnmin`
-   ```
-   mvnmin --help
-   ```
-
-4. To upgrade in the future  
-   You will need to provide the token again.
-   ```
-   HOMEBREW_GITHUB_API_TOKEN=<token> brew upgrade mvnmin 
-   ```
-
-## Download a binary of mvnmin
-
-Check for a binary release here: https://github.elasticpath.net/commerce/mvnmin/releases
-
-Download a `mvnmin-x.x.x.zip` archive and place it into a folder, e.g. `~/tools/mvnmin`
-
-On a *nix running bash (including Mac), add the following to your `~/.bash_profile`:
-
-```
-alias mvnmin='java -jar ~/tools/mvnmin/maven-minimal-0.0.5-jar-with-dependencies.jar'
-```
-
-
-## Build Maven Minimal from source
+## Build from source
 
 Clone and build the project source as follows:
 
@@ -72,13 +40,13 @@ cd mvnmin
 
 On a Linux/Mac running bash, add the following to your `~/.bash_profile`:
 ```
-alias mvnmin='java -jar ~/git/mavenminimal/target/maven-minimal-0.0.5-SNAPSHOT-jar-with-dependencies.jar'
+alias mvnmin='java -jar ~/git/mvnmin/target/mvnmin-0.0.7-SNAPSHOT-jar-with-dependencies.jar'
 ```
 
-# Running mvnmin
+# Usage/Examples
 
 ## Command Line Options
-
+```
 usage: mvmin [options] [<maven goal(s)>] [<maven phase(s)>] [<maven arg(s)>]
 
   Project Activation/Deactivation
@@ -104,6 +72,7 @@ usage: mvmin [options] [<maven goal(s)>] [<maven phase(s)>] [<maven arg(s)>]
                                would have been executed
        --version               print the version number of mvnmin and exit
 
+```
 
 The default mode (when nothing is specified) is to build the projects with dirty files.  According to `git status`.
 
@@ -130,7 +99,8 @@ Almost all maven phases, goals and args provided are passed through to the under
 There a a few exceptions:
 * `-T` the number of threads argument, is passed through to maven, unless the a synthetic reactor has the `single-thread` attribute set to `true`
 * `-pl` the project list argument is hijacked by `mvnmin`, and the processed version of `-pl` is passed to maven instead. 
-		     
+* `-f`/`--files` this option is reserved by mvnmin and must not be provided.  mvnmin will exit with an error message if provided.		     
+
 ## Environment Variables
 
 The following environment variables alter `mvnmin`s behaviour.
@@ -139,9 +109,60 @@ The following environment variables alter `mvnmin`s behaviour.
  
  `MVNMIN_MAXDEPTH=<int>` limits the levels of directories considered.  Default is 6.
 
-## Configuring mvnmin
+## Basic Examples
 
-mvnmin has an optional configuration file, `mvnmin.xml`.
+mvnmin can print the list of the currently changed modules to the terminal:
+```
+mvnmin -p
+``` 
+
+It can also invoke maven on just those changed modules:
+
+```
+mvnmin clean install
+mvnmin pmd:check checkstyle:check
+```
+
+This can be combined with `-am` and `-amd` to good effect, allowing maven to build only those pieces needed, saving time:
+
+```
+mvnmin clean install -amd -am
+``` 
+
+mvnmin can print all modules to the terminal with this:
+```
+mvnmin -p --all
+```
+
+mvnmin can run maven goals against all projects:
+```
+mvnmin pmd:check checkstyle:check
+```
+
+Combine mvnmin's ability to list all the modules with the excellent `fzf` command (the command-line fuzzy-finder), provides a simple way to explore and select your modules:
+```
+mvnmin -p --all | fzf          # single-select mode
+mvnmin -p --all | fzf -m       # select multiple modules
+```
+
+Or perhaps you just want to count the number of *-itest modules you have:
+```
+mvnmin -p --all | grep '\-itest' | wc -l
+```
+
+You can use `--dry-run` to see what maven command would be executed, without actually invoking maven.  This is very useful when troubleshooting:
+```
+mvnmin --dry-run clean install pmd:check -T4
+
+RUN  0 Main reactor : mymvn clean install pmd:check -T4 -f pom.xml --projects com.elasticpath.tools:mvnmin
+```
+
+
+
+
+## Advanced mvnmin configuration
+
+mvnmin has an optional configuration file, `mvnmin.xml`, which lives in the root module of a multi-module project.
 This file allows you to:
 * define module that should be ignored
 * define build-if modules
@@ -195,3 +216,9 @@ This file allows you to:
 
 </mvnmin>
 ```
+
+
+# License
+[Apache License Version 2.0](https://www.apache.org/licenses/LICENSE-2.0)
+
+Copyright 2021, Elastic Path Software Inc.
