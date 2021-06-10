@@ -3,28 +3,29 @@
 `mvnmin` speeds up builds on large multi-module maven builds, building only the changed modules. 
 
 Pros
- * detect and build only changed modules, speeding up builds 
- * basic dependent module building, build the things you need to get your job done and your app restarted
+ * detect and build only changed modules, speeding up builds
+ * easily include/exclude modules 
+ * basic dependent module building, build the things you need to get your job done, and your app restarted
  * finer-grained control over maven-invoker-based sub-projects 
  
 # Installation
 
 ## Binary Installation
 
-1. Check this page for currently available releases: https://github.elasticpath.com/mvnmin/releases
+1. Check this page for currently available releases: https://github.com/elasticpath/mvnmin/releases
 1. Download the required zip file and place it into a folder, e.g. `~/tools/mvnmin`
 1. Unzip the downloaded file
     ```
-    unzip maven-minimal-0.0.7.zip
+    unzip maven-minimal-0.8.0.zip
     ```
 1. On a *nix running bash (including Mac) create an alias in your terminal.  This can also be made permanent use, by adding it to your `~/.bash_profile`
 
     ```
-    alias mvnmin='java -jar ~/tools/mvnmin/mvnmin-0.0.7-jar-with-dependencies.jar'
+    alias mvnmin='java -jar ~/tools/mvnmin/mvnmin-0.8.0-jar-with-dependencies.jar'
     ```
 1. Execute `mvnmin --version` and you should see this output: 
     ```
-   mvnmin 0.0.7-SNAPSHOT
+   mvnmin 0.8.0
     ```
 
 ## Build from source
@@ -33,7 +34,7 @@ Clone and build the project source as follows:
 
 ```
 cd ~/git
-git clone git@github.elasticpath.net:commerce/mvnmin.git
+git clone https://github.com/elasticpath/mvnmin.git
 cd mvnmin
 ./mvnw clean install
 ```
@@ -129,7 +130,8 @@ This can be combined with `-am` and `-amd` to good effect, allowing maven to bui
 mvnmin clean install -amd -am
 ``` 
 
-mvnmin can print all modules to the terminal with this:
+mvnmin can print all modules to the terminal, it does this buy looking for all the pom.xml
+files, whether they are associated with a reactor or not: 
 ```
 mvnmin -p --all
 ```
@@ -156,8 +158,6 @@ mvnmin --dry-run clean install pmd:check -T4
 
 RUN  0 Main reactor : mymvn clean install pmd:check -T4 -f pom.xml --projects com.elasticpath.tools:mvnmin
 ```
-
-
 
 
 ## Advanced mvnmin configuration
