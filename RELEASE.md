@@ -22,7 +22,7 @@ The following must be true before starting this process:
     ````
 
 1. Visit the github releases page :  
-    1. Follow this link https://github.elasticpath.net/commerce/mvnmin/releases
+    1. Follow this link https://github.com/elasticpath/mvnmin/releases
     1. Press the `Draft a new release` button
     1. Select the tag you just created above for the `Tag version`
     1. Use the tag name for the `Release title` field
