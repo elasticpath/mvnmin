@@ -97,7 +97,7 @@ None of the `mvnmin` options are passed down to maven directly.  Also, mvnmin's 
 
 Almost all maven phases, goals and args provided are passed through to the underlying maven invocation.
 
-There a a few exceptions:
+There are a few exceptions:
 * `-T` the number of threads argument, is passed through to maven, unless the a synthetic reactor has the `single-thread` attribute set to `true`
 * `-pl` the project list argument is hijacked by `mvnmin`, and the processed version of `-pl` is passed to maven instead. 
 * `-f`/`--files` this option is reserved by mvnmin and must not be provided.  mvnmin will exit with an error message if provided.		     
@@ -109,6 +109,8 @@ The following environment variables alter `mvnmin`s behaviour.
  `DEBUG=true` enables debug outupt. Disabled by default
  
  `MVNMIN_MAXDEPTH=<int>` limits the levels of directories considered.  Default is 6.
+
+ `MVN_COMMAND=<mvn alternate>` the `mvn` command `mvnmin` should invoke
 
 ## Basic Examples
 
@@ -160,6 +162,17 @@ RUN  0 Main reactor : mymvn clean install pmd:check -T4 -f pom.xml --projects co
 ```
 
 
+## Configuring which mvn command mvnmin calls 
+
+mvnmin can drive different maven wrapper scripts, allowing it to fit your projects.
+
+mvnmin determines which command to issue to invoke a maven build in the following order:
+
+1. the value in the env var `MVN_COMMAND`, if specified
+1. the value specified in the `maven-command` element in `mvnmin.xml`, if specified
+1. the maven wrapper `mvnw` if found in the root project folder
+1. `mvn` if none of the above match
+
 ## Advanced mvnmin configuration
 
 mvnmin has an optional configuration file, `mvnmin.xml`, which lives in the root module of a multi-module project.
@@ -175,13 +188,15 @@ This file allows you to:
 
 <mvnmin>
 
+    <!-- Override the maven wrapper script to use. -->
+    <maven-command></maven-command>
+
 	<!--
 	  These projects will never be included in mvnmin build.
 	 -->
 	<ignored-modules>
 		<module></module>
 	</ignored-modules>
-
 
 
 	<!--
@@ -195,6 +210,7 @@ This file allows you to:
 		</build-if>
 	</build-ifs>
 
+
 	<!--
 	  Reactor Overrides
 	  Define sub-reactors that mvnmin can then target in a finer-grained way, than vanilla maven.
@@ -202,14 +218,17 @@ This file allows you to:
 	  The ordering of the reactors is significant, this is the order mvnmin will invoke the reactors.
 
 	  The reactor options are:
-	    name=<reactor name>                     - an arbitrary name for a Reactor, used during mvnmin output
-	    pom=<relative path to poml.xml>         - path the pom.xml which the maven build will be started with
-	    single-thread=<true|false>              - force a reactor to run single-threaded, regardless of command line arguments
-	    skip-if=<cmd line argument regex>       - a regex that will cause the reactor to be skipped, if present on the command line
-	    pattern                                 - a regex to match module names for this reactor (see below)
+	    name=<reactor name>                     - (required) an arbitrary name for a Reactor, used during mvnmin output
+	    pom=<relative path to poml.xml>         - (required) path the pom.xml which the maven build will be started with
+	    pattern                                 - (required, for none primary) a regex to match module names for this reactor (see below)
+	    primary=<true|false>                    - (optional) if true, this overrides the internal primary reactor's configuration.
+	                                              Only one primary is allowed.  The primary reactor's patterns are 
+	                                              ignored, as the primary reactor is formed from all unclaimed modules.
+	    single-thread=<true|false>              - (optional) force a reactor to run single-threaded, regardless of command line arguments
+	    skip-if=<cmd line argument regex>       - (optional) a regex that will cause the reactor to be skipped, if present on the command line
 	-->
 	<reactors>
-		<reactor name="" pom="" single-thread="" skip-if="">
+		<reactor name="" pom="" primary="" single-thread="" skip-if="">
 			<pattern></pattern>
 		</reactor>
 	<reactors>
