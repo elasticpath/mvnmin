@@ -10,6 +10,7 @@ The following must be true before starting this process:
 * You are authenticated with the remote git repository and able to push changes
 
 ## Process
+1. Update the version numbers in the `README.md` installation instructions to match the new release number.  
 1. Invoke the command below, and answer the questions regarding versions, typically the defaults can be accepted.This will update the pom with a new version number and create a tag in git.
     ````
     mvn release:prepare  
