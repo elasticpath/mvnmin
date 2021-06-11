@@ -71,15 +71,20 @@ public class MavenDriver {
 			return 0;
 		}
 
-		return executeMaven(command);
+		return executeMaven(command, printer);
 	}
 
-	private static int executeMaven(final CommandLine command) {
+	private static int executeMaven(final CommandLine command, final ReactorPrinter printer) {
 		DefaultExecutor executor = new DefaultExecutor();
 		try {
 			return executor.execute(command, createCustomizedSubProcessEnvironment());
 		} catch (IOException e) {
 			Logger.debug("Failed to execute maven", e);
+			if (e.getMessage().contains(command.getExecutable())) {
+				// Mentioning the executable in the exception likely
+				// means the command couldn't be found.
+				printer.commandNotExecutable(command.getExecutable());
+			}
 		}
 		return 1;
 	}
@@ -169,6 +174,7 @@ public class MavenDriver {
 	private static void preserveTerminalColoring(final Map<String, String> subProcessEnv) {
 		String mavenOpts = defaultString(subProcessEnv.get("MAVEN_OPTS"));
 		mavenOpts = mavenOpts.concat(" -Djansi.passthrough=true").trim();
+		Logger.debug("Running with MAVEN_OPTS = " + mavenOpts);
 		subProcessEnv.put("MAVEN_OPTS", mavenOpts);
 	}
 

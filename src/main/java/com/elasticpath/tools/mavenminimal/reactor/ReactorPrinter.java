@@ -61,7 +61,16 @@ public class ReactorPrinter {
 						String.join(" ", command.toStrings())));
 	}
 
+	/**
+	 * Report that the maven command couldn't be executed.
+	 * @param command the name of the command that was attempted
+	 */
+	public void commandNotExecutable(final String command) {
+		out.println(String.format("Failed to execute '%s', either it couldn't be found, or it isn't executable.", command));
+	}
+
 	private String trim(final String input) {
 		return input.substring(0, Math.min(input.length(), maxReactorNameLength));
 	}
+
 }
