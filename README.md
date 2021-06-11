@@ -147,7 +147,7 @@ This can be combined with `-am` and `-amd`, allowing maven to build only those p
 mvnmin clean install -amd -am
 ``` 
 
-- `mvnmin` can print all modules to the terminal. It does this buy looking for all the `pom.xml`
+- `mvnmin` can print all modules to the terminal. It does this by looking for all the `pom.xml`
 files, whether they are associated with a reactor or not:
 
   ```
