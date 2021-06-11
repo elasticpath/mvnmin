@@ -157,7 +157,7 @@ files, whether they are associated with a reactor or not:
 - `mvnmin` can run maven goals against all projects:
 
   ```
-  mvnmin pmd:check checkstyle:check
+  mvnmin --all pmd:check checkstyle:check
   ```
 
 - Combine `mvnmin`'s ability to list all the modules with the excellent `fzf` command, the command-line fuzzy-finder, provides a simple way to explore and select your modules:
