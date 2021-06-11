@@ -182,27 +182,27 @@ public class MvnMinCli {
 		out.println("usage: mvmin [options] [<maven goal(s)>] [<maven phase(s)>] [<maven arg(s)>]");
 		out.println();
 		out.println("  Project Activation/Deactivation");
-		out.println("    --all                      activate all pom.xml file in all sub directories");
+		out.println("    --all                      Activate all `pom.xml` files in all sub directories");
 		out.println("                               (default max depth: " + DEFAULT_MAX_DEPTH + ")");
-		out.println("    --diff[=commit[..commit]]  activate all projects changed since the specified commit, ");
+		out.println("    --diff[=commit[..commit]]  Activate all projects changed since the specified commit, ");
 		out.println("                               or range of specified commits.");
 		out.println("                               (default: 'master')");
 		out.println("    -pl,--projects <arg>       Comma-delimited list of specified reactor projects");
 		out.println("                               to build as well as those otherwise activated.");
-		out.println("                               A project can be specified by groupId:artifactId");
+		out.println("                               A project can be specified by `groupId:artifactId`");
 		out.println("                               A project can be deactivated by leading with an");
-		out.println("                               exclamation mark or hyphen: -groupId:artifactId");
+		out.println("                               exclamation mark or hyphen: `-groupId:artifactId`");
 		out.println("    --nbi                      No build-if dependencies are considered, just ");
-		out.println("                               changed modules");
+		out.println("                               changed modules.");
 		out.println();
 		out.println("  Scripting");
-		out.println("    -p                         don't invoke maven, print out activated projects,");
+		out.println("    -p                         Don't invoke maven, print out activated projects,");
 		out.println("                               sorted, newline separated.");
 		out.println();
 		out.println("  Debug");
-		out.println("    -d --dry-run               don't invoke maven, print out the commands that");
-		out.println("                               would have been executed");
-		out.println("       --version               print the version number of mvnmin and exit");
+		out.println("    -d --dry-run               Don't invoke maven, print out the commands that");
+		out.println("                               would have been executed.");
+		out.println("       --version               Print the version number of mvnmin and exit.");
 		out.println();
 
 	}
