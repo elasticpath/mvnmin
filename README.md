@@ -20,7 +20,7 @@ The following section describes how to install and build `mvnmin`.
 1. Extract the downloaded file:
 
     ```
-    unzip maven-minimal-0.8.0.zip
+    unzip maven-minimal-1.0.0.zip
     ```
 
 1. On a `*nix` running bash, including Mac, create an alias in your terminal. 
@@ -28,13 +28,13 @@ The following section describes how to install and build `mvnmin`.
     **Note**: This can also be made for permanent use, by adding it to your `~/.bash_profile`.
 
     ```
-    alias mvnmin='java -jar ~/tools/mvnmin/mvnmin-0.8.0-jar-with-dependencies.jar'
+    alias mvnmin='java -jar ~/tools/mvnmin/mvnmin-1.0.0-jar-with-dependencies.jar'
     ```
 
 1. Execute `mvnmin --version` and you should see the following output: 
    
     ```
-   mvnmin 0.8.0
+   mvnmin 1.0.0
     ```
 
 ## Build from source
@@ -51,7 +51,7 @@ The following section describes how to install and build `mvnmin`.
 1. On a Linux/Mac running bash, add the following to your `~/.bash_profile`:
 
     ```
-    alias mvnmin='java -jar ~/git/mvnmin/target/mvnmin-0.0.7-SNAPSHOT-jar-with-dependencies.jar'
+    alias mvnmin='java -jar ~/git/mvnmin/target/mvnmin-1.0.0-SNAPSHOT-jar-with-dependencies.jar'
     ```
 
 # Usage and Examples
