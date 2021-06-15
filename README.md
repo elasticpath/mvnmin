@@ -248,6 +248,7 @@ This file allows you to:
 	                                              ignored, as the primary reactor is formed from all unclaimed modules.
 	    single-thread=<true|false>              - (optional) Force a reactor to run single-threaded, regardless of command line arguments.
 	    skip-if=<cmd line argument regex>       - (optional) A regex that will cause the reactor to be skipped, if present on the command line.
+	    extra-params=<parameters>               - (optional) A list of space-separated extra parameters to pass to maven for this reactor.
 	-->
 	<reactors>
 		<reactor name="" pom="" primary="" single-thread="" skip-if="">
