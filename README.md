@@ -199,9 +199,19 @@ files, whether they are associated with a reactor or not:
 
 This file allows you to:
 
-* Define which module that should be ignored.
-* Define the build-if modules.
-* Rewire a larger reactor into smaller ones, with a different build flow.
+- Define which module that should be ignored.
+- Define the build-if modules.
+- Rewire a larger reactor into smaller ones, with a different build flow.
+  - Fine-tune the parameters passed to each sub-reactor.
+  - Skip sub-reactors if a condition matches a command-line argument.
+
+This can be useful when:
+
+- Your modules are not all in a reactor
+- You need simple depenedent-build behaviour 
+- Your projects use the `maven-invoker-plugin` to perform sub-builds.  For example, coordinating 
+  a `tycho` reactor with a `maven` reactor.
+- You need to retrain a canonical release build, but need faster development turn-around.  Without needless duplication.  
 
 ### `mvnmin.xml` format
 
@@ -258,6 +268,42 @@ This file allows you to:
 
 </mvnmin>
 ```
+
+### Configuration option reference
+
+#### Maven command
+Allows you to specify a maven command to use for this project.  See the section
+  [Configuring mvn command mvnmin calls](#Configuring mvn command mvnmin calls) for more information.  
+
+#### Ignored Modules
+These can be useful if some of your modules are within your reactor, and you'd still like to use `--all`.
+Without specifying the modules as ignored, maven will fail to find the module, and the build will fail.
+The fully-qualified name is needed, e.g. `project-group:project-module`.
+   
+TIP: `mvnmin --all` can be very useful in understanding your reactor modules.
+
+#### Build Ifs
+Tells `mvnmin` to build specific modules if other modules are activated.
+
+#### Reactors
+Define extended reactors.  Allowing you to slice your reactors in different ways for developer convenience.
+
+NOTE: When using sub-reactors it's likely the maven options `-amq`, `-am`, and `-rf` will likely not work as expected.
+This is due to the way `mvnmin` invokes maven to build specific modules.
+
+### Configuration Examples
+
+This section contains some examples of the advanced configuration.
+
+ - This will ensure a reactor only runs in single-threaded mode, regardless of how `mvnmin` is invoked:
+    ```
+    <reactor ... single-thread="true" ... >
+    ```
+- Skip a reactor if a "psuedo-profile" is specified:
+    ```
+    <reactor ... skip-if="-P\!long-build-process" ... >
+    ```
+  This can be useful if you can't, for some reason, add a profile to disable a module's build.
 
 
 # License
