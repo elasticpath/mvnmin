@@ -68,7 +68,18 @@ public class ExtendedReactor {
 		}
 
 		// Some modules can break the reactor  (Needs fixing, or needs some 'additionalProjects" glue and some explaining)
-		modulesToBuild.removeAll(mvnMinConfig.getModulesToIgnore());
+		Set<String> unmatchedIgnoredModules = new HashSet<>(mvnMinConfig.getModulesToIgnore());
+		for (String module : mvnMinConfig.getModulesToIgnore()) {
+			boolean matched = modulesToBuild.remove(module);
+			if (matched) {
+				unmatchedIgnoredModules.remove(module);
+			}
+		}
+
+		if (Logger.isDebugEnabled() && !unmatchedIgnoredModules.isEmpty()) {
+			Logger.debug("WARNING: ignored projects not matched: " + unmatchedIgnoredModules);
+		}
+
 		return modulesToBuild;
 	}
 
