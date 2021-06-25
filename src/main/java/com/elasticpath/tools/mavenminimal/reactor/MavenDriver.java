@@ -150,7 +150,6 @@ public class MavenDriver {
 
 	/**
 	 * The number of threads can be specified in several ways for Maven, each possibility needs to be removed.
-	 * This method
 	 * @param mavenArguments the arguments to pass to maven.
 	 */
 	static void removeThreadingFlags(final List<String> mavenArguments) {
