@@ -24,6 +24,7 @@ import java.nio.file.FileSystems;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
@@ -125,7 +126,8 @@ public class MavenDriver {
 		}
 
 		if (reactor.isSingleThread()) {
-			mavenArguments.removeIf(s -> s != null && s.matches("-T.*"));
+			removeThreadingFlags(mavenArguments);
+			mavenArguments.add("-T1");
 		}
 
 		if (reactor.hasActiveModules()) {
@@ -143,6 +145,27 @@ public class MavenDriver {
 		cmdLine.addArguments(mavenArguments.toArray(new String[] {}), false);
 
 		return cmdLine;
+	}
+
+
+	/**
+	 * The number of threads can be specified in several ways for Maven, each possibility needs to be removed.
+	 * @param mavenArguments the arguments to pass to maven.
+	 */
+	static void removeThreadingFlags(final List<String> mavenArguments) {
+
+		mavenArguments.removeIf(s -> s != null && s.matches("(-T.+.*|--threads=.*)"));
+
+		for (Iterator<String> iter = mavenArguments.iterator(); iter.hasNext();) {
+			String arg = iter.next();
+			if (arg.matches("(-T|--threads)")) {
+				iter.remove();          // Remove the flag
+				if (iter.hasNext()) {   // Remove the argument
+					iter.next();
+					iter.remove();
+				}
+			}
+		}
 	}
 
 	private static String determineMvnExecutable(final String overrideMvnCommand) {

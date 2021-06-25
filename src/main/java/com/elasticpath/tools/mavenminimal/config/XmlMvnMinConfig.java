@@ -96,7 +96,7 @@ public final class XmlMvnMinConfig {
 
 	private Reactor createReactorFromDefinition(final int reactorNum, final MvnMinConfigFile.ReactorDefinition reactor) {
 		return new Reactor(reactorNum, reactor.name, reactor.pom, new HashSet<>(reactor.patterns),
-				reactor.singleThreaded, reactor.extraParams, reactor.skipIf);
+				reactor.singleThread, reactor.extraParams, reactor.skipIf);
 	}
 
 	/**
@@ -187,7 +187,7 @@ public final class XmlMvnMinConfig {
 		defaultPrimaryReactorDefinition.name = "Main reactor";
 		defaultPrimaryReactorDefinition.pom = "pom.xml";
 		defaultPrimaryReactorDefinition.patterns = Arrays.asList(".*");
-		defaultPrimaryReactorDefinition.singleThreaded = false;
+		defaultPrimaryReactorDefinition.singleThread = false;
 		defaultPrimaryReactorDefinition.extraParams = "";
 		defaultPrimaryReactorDefinition.skipIf = "";
 		return defaultPrimaryReactorDefinition;
@@ -248,8 +248,8 @@ public final class XmlMvnMinConfig {
 			@XmlAttribute(name = "skip-if")
 			private String skipIf;
 
-			@XmlAttribute(name = "single-threaded")
-			private boolean singleThreaded;
+			@XmlAttribute(name = "single-thread")
+			private boolean singleThread;
 
 			@XmlAttribute(name = "extra-params")
 			private String extraParams;
@@ -264,7 +264,7 @@ public final class XmlMvnMinConfig {
 						.append("name", name)
 						.append("pom", pom)
 						.append("skipIf", skipIf)
-						.append("singleThreaded", singleThreaded)
+						.append("singleThread", singleThread)
 						.append("extraParams", extraParams)
 						.append("patterns", patterns)
 						.toString();
@@ -276,7 +276,7 @@ public final class XmlMvnMinConfig {
 				result.pom = overrideString(pom, overridingDefinition.pom);
 				result.skipIf = overrideString(skipIf, overridingDefinition.skipIf);
 				result.extraParams = overrideString(extraParams, overridingDefinition.extraParams);
-				result.singleThreaded = overridingDefinition.singleThreaded;
+				result.singleThread = overridingDefinition.singleThread;
 				result.patterns = patterns;  // patterns cannot be overridden
 				return result;
 			}
