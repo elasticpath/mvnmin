@@ -13,6 +13,27 @@
 
 The following section describes how to install and build `mvnmin`.
 
+## Prerequisites
+
+To successfully install and use `mvnmin`, you will need the `java` command available on the PATH (Java 8 JDK):
+  * Currently, `mvnmin` has only been tested with Java 8.
+  * `mvnmin` has primarily been tested on macOS and Linux, but should work on most platforms with a supported JDK.
+
+## Homebrew installation
+
+1. Tap the `mvnmin`'s formula repository:
+    ```
+    brew tap elasticpath/mvnmin
+    ```
+1. Install `mvnmin`:
+    ```
+    brew install mvnmin
+    ```
+1. Validate the installation by checking the version:
+    ```
+    mvnmin --version
+    ```
+
 ## Binary Installation
 
 1. Go to [`mvnmin` releases](https://github.com/elasticpath/mvnmin/releases) and check for currently available releases.
