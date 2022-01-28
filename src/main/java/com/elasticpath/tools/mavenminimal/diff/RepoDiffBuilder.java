@@ -18,6 +18,7 @@ package com.elasticpath.tools.mavenminimal.diff;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.elasticpath.tools.mavenminimal.config.XmlMvnMinConfig;
 import com.elasticpath.tools.mavenminimal.util.Logger;
 
 /**
@@ -75,19 +76,34 @@ public class RepoDiffBuilder {
 		final Set<String> files = new HashSet<>();
 
 		if (commitish != null) {
-			files.addAll(projectRepository.gitDiffRange(commitish));
+			Set<String> activatedByCommitish = projectRepository.gitDiffRange(commitish);
+			files.addAll(activatedByCommitish);
+			Logger.debug("These changes found in a commitish (" + commitish + "): " + activatedByCommitish);
 		}
 
 		if (includeDirtyFiles) {
-			files.addAll(projectRepository.findDirtyFiles());
+			Set<String> changedFiles = projectRepository.findDirtyFiles();
+			files.addAll(changedFiles);
+			Logger.debug("Git status found these files are changed: " + changedFiles);
 		}
 
 		if (includeAllPoms) {
-			files.addAll(projectRepository.findAllPomFiles(maxDepth));
+			Set<String> allPoms = projectRepository.findAllPomFiles(maxDepth);
+			files.addAll(allPoms);
+			Logger.debug("Adding all the pom files found (maxDepth=" + maxDepth + "): " + allPoms);
 		}
 
-		Logger.debug(files.toString());
-		return projectRepository.determineProjectIdsForFilesOrFolders(files);
+		if (files.contains(XmlMvnMinConfig.MVNMIN_CONFIG_FILE_NAME)) {
+			Logger.debug("Change detected in " + XmlMvnMinConfig.MVNMIN_CONFIG_FILE_NAME + ", ignoring.");
+			files.remove(XmlMvnMinConfig.MVNMIN_CONFIG_FILE_NAME);
+		}
+
+		Logger.debug("Consolidated list of activated files: " + files);
+
+		Set<String> projectIds = projectRepository.determineProjectIdsForFilesOrFolders(files);
+		Logger.debug("Projects activated from files (" + projectIds.size() + "): " + projectIds);
+
+		return projectIds;
 	}
 
 }
