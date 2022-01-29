@@ -64,8 +64,8 @@ public class MavenDriver {
 	 */
 	public static int runMvnForReactor(
 			final Reactor reactor, final List<String> args, final String overrideMvnCommand,
-			final boolean dryRun, final ReactorPrinter printer) {
-		CommandLine command = determineMavenCommand(reactor, args, overrideMvnCommand);
+			final boolean dryRun, final ReactorPrinter printer, final String resumeFromModule) {
+		CommandLine command = determineMavenCommand(reactor, args, overrideMvnCommand, resumeFromModule);
 		printer.commandSummary(reactor, command);
 
 		if (dryRun || !reactor.shouldBuild()) {
@@ -98,7 +98,7 @@ public class MavenDriver {
 	 * @param overrideMvnCommand the mvn command to used (can be null)
 	 * @return the Maven command to execute
 	 */
-	private static CommandLine determineMavenCommand(final Reactor reactor, final List<String> inputArgs, final String overrideMvnCommand) {
+	private static CommandLine determineMavenCommand(final Reactor reactor, final List<String> inputArgs, final String overrideMvnCommand, final String resumeFromModule) {
 		AtomicReference<String> goal = new AtomicReference<>("");
 
 		List<String> mavenMinimalArguments = new ArrayList<>(inputArgs);
@@ -133,6 +133,15 @@ public class MavenDriver {
 		if (reactor.hasActiveModules()) {
 			mavenArguments.add("--projects");
 			mavenArguments.add(String.join(",", reactor.getActiveModules()));
+		}
+
+		// Skip the reactors before the one containing the resume-from module, let the rest run.
+		for (String activeModule : reactor.getActiveModules()) {  // can't simply do `contains()`
+			if (activeModule.contains(resumeFromModule)) { // look for the abbreviated module name
+				mavenArguments.add("-rf");
+				mavenArguments.add(resumeFromModule);
+				break;
+			}
 		}
 
 		String mvnCommand = determineMvnExecutable(overrideMvnCommand);
