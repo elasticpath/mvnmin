@@ -42,7 +42,7 @@ import com.elasticpath.tools.mavenminimal.util.ToStringBuilder;
  */
 public final class XmlMvnMinConfig {
 
-	private static final String MVNMIN_CONFIG_FILE_NAME = "mvnmin.xml";
+	public static final String MVNMIN_CONFIG_FILE_NAME = "mvnmin.xml";
 	private static final int BUILD_IF_LOOPS = 4;
 
 	private final MvnMinConfigFile config;
@@ -148,7 +148,7 @@ public final class XmlMvnMinConfig {
 		try {
 			JAXBContext jaxbContext = JAXBContext.newInstance(MvnMinConfigFile.class);
 			Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
-			MvnMinConfigFile configFile = (MvnMinConfigFile) jaxbUnmarshaller.unmarshal(new File(MVNMIN_CONFIG_FILE_NAME));
+			MvnMinConfigFile configFile = (MvnMinConfigFile) jaxbUnmarshaller.unmarshal(mvnminConfigFile);
 			XmlMvnMinConfig config = new XmlMvnMinConfig(configFile);
 			Logger.debug(config);
 			return config;

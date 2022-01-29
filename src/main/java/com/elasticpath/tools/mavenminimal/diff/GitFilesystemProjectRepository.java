@@ -35,7 +35,6 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 
 import com.elasticpath.tools.mavenminimal.pom.PomProject;
-import com.elasticpath.tools.mavenminimal.util.Logger;
 
 public class GitFilesystemProjectRepository implements ProjectRepository {
 
@@ -117,7 +116,6 @@ public class GitFilesystemProjectRepository implements ProjectRepository {
 				}
 			}
 		});
-		Logger.debug("found " + results.size() + " projects");
 		return results;
 	}
 
