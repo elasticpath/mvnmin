@@ -60,6 +60,7 @@ public class MavenDriver {
 	 * @param overrideMvnCommand an override to use for a maven command
 	 * @param dryRun false to invoke maven, true to skip
 	 * @param printer the output printer
+	 * @param resumeFromModule the module to resume from for this reactor (null if not applicable)
 	 * @return the exit status of the maven invocation (or zero if dryRun is true)
 	 */
 	public static int runMvnForReactor(
@@ -96,9 +97,11 @@ public class MavenDriver {
 	 * @param reactor the list of project IDs to be passed to maven to build
 	 * @param inputArgs the command line arguments that were passed to the tool
 	 * @param overrideMvnCommand the mvn command to used (can be null)
+	 * @param resumeFromModule the module to rsult from, or null if not applicable.
 	 * @return the Maven command to execute
 	 */
-	private static CommandLine determineMavenCommand(final Reactor reactor, final List<String> inputArgs, final String overrideMvnCommand, final String resumeFromModule) {
+	private static CommandLine determineMavenCommand(
+			final Reactor reactor, final List<String> inputArgs, final String overrideMvnCommand, final String resumeFromModule) {
 		AtomicReference<String> goal = new AtomicReference<>("");
 
 		List<String> mavenMinimalArguments = new ArrayList<>(inputArgs);

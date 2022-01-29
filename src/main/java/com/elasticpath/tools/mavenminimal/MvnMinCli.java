@@ -303,7 +303,8 @@ public class MvnMinCli {
 					if (activeModule.contains(resumeFromModule)) { // look for the abbreviated module name
 						resumeFromActivated = true;
 					} else {
-						Logger.debug("Skipping " + subReactor.getReactorName() + " looking for resume-from module: " + resumeFromModule);
+						Logger.debug("Skipping " + subReactor.getReactorName()
+								+ " looking for resume-from module: " + resumeFromModule);
 						subReactor.setSkipReactor(true);
 					}
 				}
@@ -314,7 +315,9 @@ public class MvnMinCli {
 		for (Reactor subReactor : xreactor.getSubReactors()) {
 			if (mavenExitValue == 0) {
 				mavenExitValue =
-						MavenDriver.runMvnForReactor(subReactor, filteredArgs, mvnMinConfig.getMvnCommand(), dryRun, printer, resumeFromModule);
+						MavenDriver.runMvnForReactor(
+								subReactor, filteredArgs, mvnMinConfig.getMvnCommand(),
+								dryRun, printer, resumeFromModule);
 				printer.newline();
 			} else {
 				out.println("mvnmin: Maven failed to run successfully.");
