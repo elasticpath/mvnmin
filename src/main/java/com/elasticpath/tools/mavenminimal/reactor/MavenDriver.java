@@ -133,18 +133,20 @@ public class MavenDriver {
 			mavenArguments.add("-T1");
 		}
 
+		// Skip the reactors before the one containing the resume-from module, let the rest run.
+		if (resumeFromModule != null) {
+			for (String activeModule : reactor.getActiveModules()) {  // can't simply do `contains()`
+				if (activeModule.contains(resumeFromModule)) { // look for the abbreviated module name
+					mavenArguments.add("-rf");
+					mavenArguments.add(resumeFromModule);
+					break;
+				}
+			}
+		}
+
 		if (reactor.hasActiveModules()) {
 			mavenArguments.add("--projects");
 			mavenArguments.add(String.join(",", reactor.getActiveModules()));
-		}
-
-		// Skip the reactors before the one containing the resume-from module, let the rest run.
-		for (String activeModule : reactor.getActiveModules()) {  // can't simply do `contains()`
-			if (activeModule.contains(resumeFromModule)) { // look for the abbreviated module name
-				mavenArguments.add("-rf");
-				mavenArguments.add(resumeFromModule);
-				break;
-			}
 		}
 
 		String mvnCommand = determineMvnExecutable(overrideMvnCommand);

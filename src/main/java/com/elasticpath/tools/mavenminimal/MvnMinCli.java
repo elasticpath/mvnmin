@@ -295,17 +295,19 @@ public class MvnMinCli {
 		printer.newline();     // add some spacing
 
 		// Skip the reactors before the one containing the resume-from module, let the rest run.
-		boolean resumeFromActivated = false;
-		for (Reactor subReactor : xreactor.getSubReactors()) {
-			if (!resumeFromActivated) {
-				for (String activeModule : subReactor.getActiveModules()) {  // can't simply do `contains()`
-					Logger.debug(activeModule);
-					if (activeModule.contains(resumeFromModule)) { // look for the abbreviated module name
-						resumeFromActivated = true;
-					} else {
-						Logger.debug("Skipping " + subReactor.getReactorName()
-								+ " looking for resume-from module: " + resumeFromModule);
-						subReactor.setSkipReactor(true);
+		if (resumeFromModule != null) {
+			boolean resumeFromActivated = false;
+			for (Reactor subReactor : xreactor.getSubReactors()) {
+				if (!resumeFromActivated) {
+					for (String activeModule : subReactor.getActiveModules()) {  // can't simply do `contains()`
+						Logger.debug(activeModule);
+						if (activeModule.contains(resumeFromModule)) { // look for the abbreviated module name
+							resumeFromActivated = true;
+						} else {
+							Logger.debug("Skipping " + subReactor.getReactorName()
+									+ " looking for resume-from module: " + resumeFromModule);
+							subReactor.setSkipReactor(true);
+						}
 					}
 				}
 			}
