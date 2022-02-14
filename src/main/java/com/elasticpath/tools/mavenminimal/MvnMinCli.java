@@ -205,7 +205,7 @@ public class MvnMinCli {
 		out.println("    --nbi                      No build-if dependencies are considered, just ");
 		out.println("                               changed modules.");
 		out.println();
-		out.println("  Intercepted Maven Options;");
+		out.println("  Intercepted Maven Options:");
 		out.println("    -rf,--resume-from <arg>    Resume reactor from specified project (and sub-reactor).");
 		out.println("    -f,--file <arg>            Not supported, mvnmin will exit.");
 		out.println();

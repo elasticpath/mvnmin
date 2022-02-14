@@ -98,7 +98,7 @@ usage: mvmin [options] [<maven goal(s)>] [<maven phase(s)>] [<maven arg(s)>]
     --nbi                      No build-if dependencies are considered, just
                                changed modules.
 
-  Intercepted Maven Options;
+  Intercepted Maven Options:
     -rf,--resume-from <arg>    Resume reactor from specified project (and sub-reactor).
     -f,--file <arg>            Not supported, mvnmin will exit.
 
