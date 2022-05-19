@@ -57,6 +57,7 @@ public class MvnMinCli {
 	private static boolean printMode;
 	private static boolean versionMode;
 	private static boolean buildIfEnabled = true;
+	private static String resumeFromModule;
 
 	/**
 	 * The default command line entry point for mvnmin.
@@ -148,32 +149,41 @@ public class MvnMinCli {
 	 * @param out the PrintStream to report any issues to.
 	 */
 	private static void parseArgs(final String[] args, final PrintStream out) {
+		boolean parsingResumeFrom = false;
 		for (String arg : args) {
-			if (arg.matches("--all")) {
-				allPomMode = true;
-			} else if (arg.equals("-d") || arg.equals("--dry-run")) {
-				dryRunMode = true;
-			} else if (arg.matches("--diff.*")) {
-				int equalsIndex = arg.indexOf('=');
-				if (equalsIndex > -1 && equalsIndex + 1 < arg.length()) {
-					commitDiffArg = arg.substring(equalsIndex + 1);
+			if (parsingResumeFrom) {
+				parsingResumeFrom = false;
+				resumeFromModule = arg;
+			} else {
+				if (arg.matches("--all")) {
+					allPomMode = true;
+				} else if (arg.equals("-d") || arg.equals("--dry-run")) {
+					dryRunMode = true;
+				} else if (arg.matches("--diff.*")) {
+					int equalsIndex = arg.indexOf('=');
+					if (equalsIndex > -1 && equalsIndex + 1 < arg.length()) {
+						commitDiffArg = arg.substring(equalsIndex + 1);
+					}
+					if (!commitDiffArg.contains("..")) {
+						commitDiffArg += "..";
+					}
+					diffCommitMode = true;
+				} else if (arg.matches("--help")) {
+					printUsage(out);
+					exit(0);
+				} else if (arg.equals("-p")) {
+					printMode = true;
+				} else if (arg.equals("--nbi")) {
+					buildIfEnabled = false;
+				} else if (arg.equals("--version")) {
+					versionMode = true;
+				} else if (arg.equals("-f") || arg.equals("--file")) {
+					out.println("The options '-f' and '--file' are not supported by mvnmin, exiting.");
+					exit(1);
+				} else if (arg.equals("-rf") || arg.equals("--resume-from")) {
+					parsingResumeFrom = true;
+					// the next param is out project
 				}
-				if (!commitDiffArg.contains("..")) {
-					commitDiffArg += "..";
-				}
-				diffCommitMode = true;
-			} else if (arg.matches("--help")) {
-				printUsage(out);
-				exit(0);
-			} else if (arg.equals("-p")) {
-				printMode = true;
-			} else if (arg.equals("--nbi")) {
-				buildIfEnabled = false;
-			} else if (arg.equals("--version")) {
-				versionMode = true;
-			} else if (arg.equals("-f") || arg.equals("--file")) {
-				out.println("The options '-f' and '--file' are not supported by mvnmin, exiting.");
-				exit(1);
 			}
 		}
 	}
@@ -194,6 +204,10 @@ public class MvnMinCli {
 		out.println("                               exclamation mark or hyphen: `-groupId:artifactId`");
 		out.println("    --nbi                      No build-if dependencies are considered, just ");
 		out.println("                               changed modules.");
+		out.println();
+		out.println("  Intercepted Maven Options:");
+		out.println("    -rf,--resume-from <arg>    Resume reactor from specified project (and sub-reactor).");
+		out.println("    -f,--file <arg>            Not supported, mvnmin will exit.");
 		out.println();
 		out.println("  Scripting");
 		out.println("    -p                         Don't invoke maven, print out activated projects,");
@@ -280,12 +294,32 @@ public class MvnMinCli {
 		ReactorPrinter printer = new ReactorPrinter(maxReactorNameLength.getAsInt(), out);
 		printer.newline();     // add some spacing
 
+		// Skip the reactors before the one containing the resume-from module, let the rest run.
+		if (resumeFromModule != null) {
+			boolean resumeFromActivated = false;
+			for (Reactor subReactor : xreactor.getSubReactors()) {
+				if (!resumeFromActivated) {
+					for (String activeModule : subReactor.getActiveModules()) {  // can't simply do `contains()`
+						Logger.debug(activeModule);
+						if (activeModule.contains(resumeFromModule)) { // look for the abbreviated module name
+							resumeFromActivated = true;
+						} else {
+							Logger.debug("Skipping " + subReactor.getReactorName()
+									+ " looking for resume-from module: " + resumeFromModule);
+							subReactor.setSkipReactor(true);
+						}
+					}
+				}
+			}
+		}
 
 		int mavenExitValue = 0;
 		for (Reactor subReactor : xreactor.getSubReactors()) {
 			if (mavenExitValue == 0) {
 				mavenExitValue =
-						MavenDriver.runMvnForReactor(subReactor, filteredArgs, mvnMinConfig.getMvnCommand(), dryRun, printer);
+						MavenDriver.runMvnForReactor(
+								subReactor, filteredArgs, mvnMinConfig.getMvnCommand(),
+								dryRun, printer, resumeFromModule);
 				printer.newline();
 			} else {
 				out.println("mvnmin: Maven failed to run successfully.");
@@ -299,6 +333,8 @@ public class MvnMinCli {
 		List<String> mavenArguments = new ArrayList<>(Arrays.asList(args));
 		removeArgPair(mavenArguments, "-pl");
 		removeArgPair(mavenArguments, "--projects");
+		removeArgPair(mavenArguments, "-rf");
+		removeArgPair(mavenArguments, "--resume-from");
 
 		mavenArguments.removeIf(s -> s.equals("--all"));
 		mavenArguments.removeIf(s -> s.equals("--d"));
