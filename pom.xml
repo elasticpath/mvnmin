@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.elasticpath.tools</groupId>
   <artifactId>mvnmin</artifactId>
-  <version>1.0.2-SNAPSHOT</version>
+  <version>1.0.2</version>
   <name>mvnmin</name>
   <description>CLI tool for building the minimum number of maven modules possible</description>
   <licenses>
@@ -24,7 +24,7 @@
 
   <scm>
     <developerConnection>scm:git:git@github.com:elasticpath/mvnmin.git</developerConnection>
-    <tag>mvnmin-0.7.0</tag>
+    <tag>mvnmin-1.0.2</tag>
   </scm>
 
   <distributionManagement>
