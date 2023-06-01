@@ -60,12 +60,13 @@ public class MavenDriver {
 	 * @param overrideMvnCommand an override to use for a maven command
 	 * @param dryRun false to invoke maven, true to skip
 	 * @param printer the output printer
+	 * @param resumeFromModule the module to resume from for this reactor (null if not applicable)
 	 * @return the exit status of the maven invocation (or zero if dryRun is true)
 	 */
 	public static int runMvnForReactor(
 			final Reactor reactor, final List<String> args, final String overrideMvnCommand,
-			final boolean dryRun, final ReactorPrinter printer) {
-		CommandLine command = determineMavenCommand(reactor, args, overrideMvnCommand);
+			final boolean dryRun, final ReactorPrinter printer, final String resumeFromModule) {
+		CommandLine command = determineMavenCommand(reactor, args, overrideMvnCommand, resumeFromModule);
 		printer.commandSummary(reactor, command);
 
 		if (dryRun || !reactor.shouldBuild()) {
@@ -96,9 +97,11 @@ public class MavenDriver {
 	 * @param reactor the list of project IDs to be passed to maven to build
 	 * @param inputArgs the command line arguments that were passed to the tool
 	 * @param overrideMvnCommand the mvn command to used (can be null)
+	 * @param resumeFromModule the module to rsult from, or null if not applicable.
 	 * @return the Maven command to execute
 	 */
-	private static CommandLine determineMavenCommand(final Reactor reactor, final List<String> inputArgs, final String overrideMvnCommand) {
+	private static CommandLine determineMavenCommand(
+			final Reactor reactor, final List<String> inputArgs, final String overrideMvnCommand, final String resumeFromModule) {
 		AtomicReference<String> goal = new AtomicReference<>("");
 
 		List<String> mavenMinimalArguments = new ArrayList<>(inputArgs);
@@ -128,6 +131,17 @@ public class MavenDriver {
 		if (reactor.isSingleThread()) {
 			removeThreadingFlags(mavenArguments);
 			mavenArguments.add("-T1");
+		}
+
+		// Skip the reactors before the one containing the resume-from module, let the rest run.
+		if (resumeFromModule != null) {
+			for (String activeModule : reactor.getActiveModules()) {  // can't simply do `contains()`
+				if (activeModule.contains(resumeFromModule)) { // look for the abbreviated module name
+					mavenArguments.add("-rf");
+					mavenArguments.add(resumeFromModule);
+					break;
+				}
+			}
 		}
 
 		if (reactor.hasActiveModules()) {
