@@ -31,6 +31,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import org.apache.commons.exec.CommandLine;
 import org.apache.commons.exec.DefaultExecutor;
+import org.apache.commons.exec.OS;
 
 import com.elasticpath.tools.mavenminimal.util.Logger;
 
@@ -66,6 +67,7 @@ public class MavenDriver {
 			final Reactor reactor, final List<String> args, final String overrideMvnCommand,
 			final boolean dryRun, final ReactorPrinter printer) {
 		CommandLine command = determineMavenCommand(reactor, args, overrideMvnCommand);
+
 		printer.commandSummary(reactor, command);
 
 		if (dryRun || !reactor.shouldBuild()) {
@@ -177,15 +179,26 @@ public class MavenDriver {
 		} else if (isNotBlank(overrideMvnCommand)) {
 			mvnCommand = overrideMvnCommand;      // use the mvn command from the mvnmin properties if specified
 		} else {
+			String commandExtension = getCommandExtensionForOS();
+
 			File cwd = FileSystems.getDefault().getPath("").toAbsolutePath().toFile();  // check for maven wrapper
-			File mvnwFile = new File(cwd, "mvnw");
+			File mvnwFile = new File(cwd, "mvnw" + commandExtension);
 			if (mvnwFile.exists()) {
-				mvnCommand = "./mvnw";
+				mvnCommand = "./mvnw" + commandExtension;
 			} else {
-				mvnCommand = "mvn";  // use "mvn" on the PATH if no maven wrapper
+
+				mvnCommand = "mvn" + commandExtension;  // use "mvn" on the PATH if no maven wrapper
 			}
 		}
 		return mvnCommand;
+	}
+
+	private static String getCommandExtensionForOS() {
+		String commandExtension = "";
+		if (OS.isFamilyWindows()) {
+			commandExtension = ".cmd";
+		}
+		return commandExtension;
 	}
 
 	private static Map<String, String> createCustomizedSubProcessEnvironment() {

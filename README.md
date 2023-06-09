@@ -37,22 +37,29 @@ To successfully install and use `mvnmin`, you will need the `java` command avail
 ## Binary Installation
 
 1. Go to [`mvnmin` releases](https://github.com/elasticpath/mvnmin/releases) and check for currently available releases.
-1. Download the required zip file and place it into a folder, such as `~/tools/mvnmin`.
-1. Extract the downloaded file:
+2. Download the required zip file and place it into a folder, such as `~/tools/mvnmin`.
+3. Extract the downloaded file:
 
     ```
     unzip maven-minimal-1.0.2.zip
     ```
 
-1. On a `*nix` running bash, including Mac, create an alias in your terminal. 
+4. Set up alias/shortcut:
+   1. On a `*nix` running bash, including Mac, create an alias in your terminal.
 
     **Note**: This can also be made for permanent use, by adding it to your `~/.bash_profile`.
 
     ```
     alias mvnmin='java -jar ~/tools/mvnmin/mvnmin-1.0.2-jar-with-dependencies.jar'
     ```
+   2. On Windows you will likely want to create a `mvnmin.cmd` file on your PATH that looks like this:
+   ```
+   @echo off
+   set MVNMIN_JAR=C:\path\to\mvnmin\mvnmin-1.0.2.jar
+   java -jar "%MVNMIN_JAR%" %*
+   ```
 
-1. Execute `mvnmin --version` and you should see the following output: 
+6. Execute `mvnmin --version` and you should see the following output:
    
     ```
    mvnmin 1.0.2
@@ -146,6 +153,9 @@ The following environment variables alter `mvnmin`s behaviour:
 - `MVNMIN_MAXDEPTH=<int>`: Limits the levels of directories considered. The default is 6.
 
 - `MVN_COMMAND=<mvn alternate>`: The `mvn` command `mvnmin` should invoke.
+  - Note on Windows you will need to explicity include the `.cmd`
+    extension (or similar) for your command to be found.
+
 
 ## Basic Examples
 
