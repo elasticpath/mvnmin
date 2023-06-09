@@ -291,6 +291,15 @@ This file allows you to:
 ```
 
 
+# Contributing to this project
+
+Anyone and everyone is welcome to contribute. Please take a moment to
+review the [guidelines for contributing](CONTRIBUTING.md).
+
+* [Bug reports](CONTRIBUTING.md#bug-reports)
+* [Feature requests](CONTRIBUTING.md#feature-requests)
+* [Pull requests](CONTRIBUTING.md#pull-requests)
+
 # License
 [Apache License Version 2.0](https://www.apache.org/licenses/LICENSE-2.0)
 
