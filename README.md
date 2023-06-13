@@ -41,7 +41,7 @@ To successfully install and use `mvnmin`, you will need the `java` command avail
 3. Extract the downloaded file:
 
     ```
-    unzip maven-minimal-1.0.2.zip
+    unzip maven-minimal-1.0.3.zip
     ```
 
 4. Set up alias/shortcut:
@@ -50,19 +50,19 @@ To successfully install and use `mvnmin`, you will need the `java` command avail
     **Note**: This can also be made for permanent use, by adding it to your `~/.bash_profile`.
 
     ```
-    alias mvnmin='java -jar ~/tools/mvnmin/mvnmin-1.0.2-jar-with-dependencies.jar'
+    alias mvnmin='java -jar ~/tools/mvnmin/mvnmin-1.0.3-jar-with-dependencies.jar'
     ```
    2. On Windows you will likely want to create a `mvnmin.cmd` file on your PATH that looks like this:
    ```
    @echo off
-   set MVNMIN_JAR=C:\path\to\mvnmin\mvnmin-1.0.2.jar
+   set MVNMIN_JAR=C:\path\to\mvnmin\mvnmin-1.0.3-jar-with-dependencies.jar
    java -jar "%MVNMIN_JAR%" %*
    ```
 
 6. Execute `mvnmin --version` and you should see the following output:
    
     ```
-   mvnmin 1.0.2
+   mvnmin 1.0.3
     ```
 
 ## Build from source
@@ -79,7 +79,7 @@ To successfully install and use `mvnmin`, you will need the `java` command avail
 1. On a Linux/Mac running bash, add the following to your `~/.bash_profile`:
 
     ```
-    alias mvnmin='java -jar ~/git/mvnmin/target/mvnmin-1.0.2-SNAPSHOT-jar-with-dependencies.jar'
+    alias mvnmin='java -jar ~/git/mvnmin/target/mvnmin-1.0.3-SNAPSHOT-jar-with-dependencies.jar'
     ```
 
 # Usage and Examples
